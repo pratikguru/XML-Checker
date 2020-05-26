@@ -20,16 +20,37 @@ class Lexon:
         print("-------------------------")
 
 
-atoms = ["<note>", "<date>", "dfdfdfdf", "</date>", "<hour>", "03:34",
-         "</hour>", "<to>", "someone", "</note>", "</note>"]
+# atoms = ["<note>", "<date>", "dfdfdfdf", "</date>", "<hour>", "03:34",
+#          "</hour>", "<to>", "someone", "</to>", "<note>"]
 
 
 class XMLChecker:
     def __init__(self):
         self.stack = []
         self.count = 0
-        self.DEBUG = False
+        self.DEBUG = True
         self.CRITICAL = False
+
+    def fetchAtomsFromFile(self, filename):
+        if filename[-3:] != "xml":
+            raise("FileFormatError: Found " +
+                  str(filename[-3:]) + " instead of xml.")
+        token_list = []
+        count = 0
+        with open(filename) as fp:
+            Lines = fp.readlines()
+            for line in Lines:
+                count += 1
+                data = line.strip()
+                while len(data) > 0:
+                    front = data.index('<')
+                    end = data.index('>')
+                    if data[:front]:
+                        token_list.append(data[:front])
+                    token_list.append(data[front:end+1])
+                    data = data[end+1:]
+
+        return token_list
 
     def check(self, atoms):
 
@@ -93,8 +114,11 @@ class XMLChecker:
                 print("OK")
             else:
                 pass
+            return 0
 
 
 if __name__ == "__main__":
     checker = XMLChecker()
-    checker.check(atoms)
+    atoms = (checker.fetchAtomsFromFile("test.xml"))
+    if not checker.check(atoms):
+        print("XML File ok.")
