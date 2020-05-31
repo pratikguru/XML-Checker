@@ -119,6 +119,13 @@ class XMLChecker:
 
 if __name__ == "__main__":
     checker = XMLChecker()
-    atoms = (checker.fetchAtomsFromFile("test.xml"))
+    try:
+        atoms = (checker.fetchAtomsFromFile("test.xml"))
+    except FileNotFoundError:
+        print("File Nout Found!")
+        exit(-1)
+
+    if atoms:
+        print(atoms)
     if not checker.check(atoms):
         print("XML File ok.")
